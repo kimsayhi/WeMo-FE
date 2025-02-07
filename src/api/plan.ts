@@ -48,6 +48,7 @@ export const fetchPlanDetail = async (planId: number, cookie?: string) => {
 };
 
 export const reissueSSR = async (cookie: string) => {
+  console.log('리이슈 실행');
   const response = await axios.post(API_PATHS.AUTH.REFRESH_TOKEN, {
     baseURL: process.env.NEXT_PUBLIC_BASE_URL,
     withCredentials: true,
