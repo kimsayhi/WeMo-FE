@@ -47,15 +47,17 @@ export const fetchPlanDetail = async (planId: number, cookie?: string) => {
   return response.data;
 };
 
+const ssrInstance = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_BASE_URL,
+  withCredentials: true,
+});
+
 export const reissueSSR = async (cookie: string) => {
   console.log('리이슈 실행');
-  console.log(
-    '요청url',
-    `${process.env.NEXT_PUBLIC_BASE_URL}${API_PATHS.AUTH.REFRESH_TOKEN}`,
-  );
   try {
     const response = await axios.post(
       `${process.env.NEXT_PUBLIC_BASE_URL}${API_PATHS.AUTH.REFRESH_TOKEN}`,
+      {},
       {
         headers: { Cookie: cookie },
         withCredentials: true,
@@ -78,18 +80,15 @@ export const reissueSSR = async (cookie: string) => {
 export const fetchPlanDetailSSR = async (planId: number, cookie?: string) => {
   if (isNaN(planId)) return;
   const headers = cookie ? { Cookie: cookie } : {};
-  console.log(headers);
   try {
-    const response = await axios<PlanDetailResponse>(
-      `${process.env.NEXT_PUBLIC_BASE_URL}${API_PATHS.AUTH.REFRESH_TOKEN}`,
+    const response = await ssrInstance<PlanDetailResponse>(
+      API_PATHS.PLAN.GET_DETAIL(planId),
       {
         headers: headers,
-        withCredentials: true,
       },
     );
     return response.data;
   } catch (error: unknown) {
-    console.log('데이터패치 에러', error);
     if (axios.isAxiosError(error) && error.response) {
       return error.response.status;
     }
