@@ -21,14 +21,16 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       try {
         //현재 context에서 불러온 쿠키를 포함시킴
         const response = await fetchPlanDetailSSR(idNum, cookie);
+        console.log('첫번째 패치', response);
         if (response === 401) throw new Error();
         return response;
       } catch (error: unknown) {
-        if (!(error === 401)) return;
-        //쿠키가 만료되었을 경우 새로운 accessToken을 불러옴
+        console.log('에러데이터터', error);
         const newCookie = await reissueSSR(cookie);
+        console.log('reissueSSR 반환값 ', newCookie);
         //여기서 쿠키를 불러온다음 패치하는 거니까 쿠키가 자동으로 포함이 될까?
         const response = await fetchPlanDetailSSR(idNum, newCookie);
+        console.log('reissueSSR후 리패치데이터', response);
         return response;
       }
     },
