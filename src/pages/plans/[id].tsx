@@ -19,17 +19,12 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     queryKey: QUERY_KEY.planDetail(idNum),
     queryFn: async () => {
       try {
-        //현재 context에서 불러온 쿠키를 포함시킴
         const response = await fetchPlanDetailSSR(idNum, cookie);
-        console.log('첫번째 패치', response);
         if (response === 401) throw new Error();
         return response;
       } catch {
-        console.log('catch문 실행');
         const newCookie = await reissueSSR(cookie);
-        console.log('reissueSSR 반환값 ', newCookie);
         const response = await fetchPlanDetailSSR(idNum, newCookie);
-        console.log('reissueSSR후 리패치데이터', response);
         return response;
       }
     },
