@@ -47,12 +47,15 @@ export const fetchPlanDetail = async (planId: number, cookie?: string) => {
   return response.data;
 };
 
+const ssrInstance = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_BASE_URL,
+  withCredentials: true,
+});
+
 export const reissueSSR = async (cookie: string) => {
   console.log('리이슈 실행');
   try {
-    const response = await axios.post(API_PATHS.AUTH.REFRESH_TOKEN, {
-      baseURL: process.env.NEXT_PUBLIC_BASE_URL,
-      withCredentials: true,
+    const response = await ssrInstance.post(API_PATHS.AUTH.REFRESH_TOKEN, {
       headers: { Cookie: cookie },
     });
     console.log('리이슈 응답', response);
@@ -73,11 +76,9 @@ export const fetchPlanDetailSSR = async (planId: number, cookie?: string) => {
   if (isNaN(planId)) return;
   const headers = cookie ? { Cookie: cookie } : {};
   try {
-    const response = await axios<PlanDetailResponse>(
+    const response = await ssrInstance<PlanDetailResponse>(
       API_PATHS.PLAN.GET_DETAIL(planId),
       {
-        baseURL: process.env.NEXT_PUBLIC_BASE_URL,
-        withCredentials: true,
         headers: headers,
       },
     );
