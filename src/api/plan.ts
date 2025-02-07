@@ -47,17 +47,21 @@ export const fetchPlanDetail = async (planId: number, cookie?: string) => {
   return response.data;
 };
 
-const ssrInstance = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_BASE_URL,
-  withCredentials: true,
-});
-
 export const reissueSSR = async (cookie: string) => {
   console.log('리이슈 실행');
+  console.log(
+    '요청url',
+    `${process.env.NEXT_PUBLIC_BASE_URL}${API_PATHS.AUTH.REFRESH_TOKEN}`,
+  );
   try {
-    const response = await ssrInstance.post(API_PATHS.AUTH.REFRESH_TOKEN, {
-      headers: { Cookie: cookie },
-    });
+    const response = await axios.post(
+      `${process.env.NEXT_PUBLIC_BASE_URL}${API_PATHS.AUTH.REFRESH_TOKEN}`,
+      null,
+      {
+        headers: { Cookie: cookie },
+        withCredentials: true,
+      },
+    );
     console.log('리이슈 응답', response);
     const newCookie = response.headers['set-cookie'];
     console.log('뉴쿠키', newCookie);
