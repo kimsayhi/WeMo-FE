@@ -53,24 +53,16 @@ const ssrInstance = axios.create({
 });
 
 export const reissueSSR = async (cookie: string) => {
-  console.log('리이슈 실행');
   try {
-    const response = await axios.post(
-      `${process.env.NEXT_PUBLIC_BASE_URL}${API_PATHS.AUTH.REFRESH_TOKEN}`,
+    const response = await ssrInstance.post(
+      API_PATHS.AUTH.REFRESH_TOKEN,
       {},
       {
         headers: { Cookie: cookie },
-        withCredentials: true,
       },
     );
-    console.log('리이슈 응답', response);
     const newCookie = response.headers['set-cookie'];
-    console.log('뉴쿠키', newCookie);
     if (!newCookie) return;
-    console.log(
-      '리이슈 리턴값',
-      Array.isArray(newCookie) ? newCookie.join('; ') : newCookie,
-    );
     return Array.isArray(newCookie) ? newCookie.join('; ') : newCookie;
   } catch (error) {
     console.log('리이슈 에러', error);
