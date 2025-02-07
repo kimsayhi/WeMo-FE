@@ -80,10 +80,11 @@ export const fetchPlanDetailSSR = async (planId: number, cookie?: string) => {
   if (isNaN(planId)) return;
   const headers = cookie ? { Cookie: cookie } : {};
   try {
-    const response = await ssrInstance<PlanDetailResponse>(
-      API_PATHS.PLAN.GET_DETAIL(planId),
+    const response = await axios<PlanDetailResponse>(
+      `${process.env.NEXT_PUBLIC_BASE_URL}${API_PATHS.AUTH.REFRESH_TOKEN}`,
       {
         headers: headers,
+        withCredentials: true,
       },
     );
     return response.data;
