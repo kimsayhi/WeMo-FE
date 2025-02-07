@@ -8,6 +8,7 @@ import instance from './axiosInstance';
 import { ApiResponse } from '@/types/api/apiResponse';
 import { showToast } from '@/utils/showToast';
 import TOAST_MESSAGE from '@/constants/toastMessage';
+import axios from 'axios';
 import { AxiosRequestConfig } from 'axios';
 
 interface PostPlanParams {
@@ -44,6 +45,35 @@ export const fetchPlanDetail = async (planId: number, cookie?: string) => {
     config,
   );
   return response.data;
+};
+
+export const reissueSSR = async (cookie: string) => {
+  await axios.post(API_PATHS.AUTH.REFRESH_TOKEN, {
+    baseURL: process.env.NEXT_PUBLIC_BASE_URL,
+    withCredentials: true,
+    headers: { Cookie: cookie },
+  });
+};
+
+export const fetchPlanDetailSSR = async (planId: number, cookie?: string) => {
+  if (isNaN(planId)) return;
+  const headers = cookie ? { Cookie: cookie } : {};
+  try {
+    const response = await axios<PlanDetailResponse>(
+      API_PATHS.PLAN.GET_DETAIL(planId),
+      {
+        baseURL: process.env.NEXT_PUBLIC_BASE_URL,
+        withCredentials: true,
+        headers: headers,
+      },
+    );
+    return response.data;
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error) && error.response) {
+      return error.response.status;
+    }
+    throw error;
+  }
 };
 
 export const attendPlan = async (planId: number) => {
