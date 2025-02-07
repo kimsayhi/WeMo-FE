@@ -56,7 +56,6 @@ export const reissueSSR = async (cookie: string) => {
   try {
     const response = await axios.post(
       `${process.env.NEXT_PUBLIC_BASE_URL}${API_PATHS.AUTH.REFRESH_TOKEN}`,
-      null,
       {
         headers: { Cookie: cookie },
         withCredentials: true,
