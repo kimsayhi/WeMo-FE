@@ -19,13 +19,16 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     queryKey: QUERY_KEY.planDetail(idNum),
     queryFn: async () => {
       try {
+        //현재 context에서 불러온 쿠키를 포함시킴
         const response = await fetchPlanDetailSSR(idNum, cookie);
         if (response === 401) throw new Error();
         return response;
       } catch (error: unknown) {
         if (!(error === 401)) return;
-        await reissueSSR(cookie);
-        const response = await fetchPlanDetailSSR(idNum);
+        //쿠키가 만료되었을 경우 새로운 accessToken을 불러옴
+        const newCookie = await reissueSSR(cookie);
+        //여기서 쿠키를 불러온다음 패치하는 거니까 쿠키가 자동으로 포함이 될까?
+        const response = await fetchPlanDetailSSR(idNum, newCookie);
         return response;
       }
     },

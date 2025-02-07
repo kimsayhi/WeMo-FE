@@ -48,11 +48,14 @@ export const fetchPlanDetail = async (planId: number, cookie?: string) => {
 };
 
 export const reissueSSR = async (cookie: string) => {
-  await axios.post(API_PATHS.AUTH.REFRESH_TOKEN, {
+  const response = await axios.post(API_PATHS.AUTH.REFRESH_TOKEN, {
     baseURL: process.env.NEXT_PUBLIC_BASE_URL,
     withCredentials: true,
     headers: { Cookie: cookie },
   });
+  const newCookie = response.headers['set-cookie'];
+  if (!newCookie) return;
+  return Array.isArray(newCookie) ? newCookie.join('; ') : newCookie;
 };
 
 export const fetchPlanDetailSSR = async (planId: number, cookie?: string) => {
