@@ -78,6 +78,7 @@ export const reissueSSR = async (cookie: string) => {
 export const fetchPlanDetailSSR = async (planId: number, cookie?: string) => {
   if (isNaN(planId)) return;
   const headers = cookie ? { Cookie: cookie } : {};
+  console.log(headers);
   try {
     const response = await axios<PlanDetailResponse>(
       `${process.env.NEXT_PUBLIC_BASE_URL}${API_PATHS.AUTH.REFRESH_TOKEN}`,
@@ -88,6 +89,7 @@ export const fetchPlanDetailSSR = async (planId: number, cookie?: string) => {
     );
     return response.data;
   } catch (error: unknown) {
+    console.log('데이터패치 에러', error);
     if (axios.isAxiosError(error) && error.response) {
       return error.response.status;
     }
