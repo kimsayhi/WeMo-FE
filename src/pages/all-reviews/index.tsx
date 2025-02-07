@@ -41,7 +41,7 @@ export const getStaticProps: GetStaticProps = async () => {
     queryFn: ({ pageParam = 1 }) => fetchReviews(category, filters, pageParam),
     initialPageParam: 1,
     getNextPageParam: (lastPage: { reviews: Review[]; nextPage?: number }) =>
-      lastPage.nextPage || undefined,
+      lastPage.nextPage || null,
   });
   return {
     props: {
