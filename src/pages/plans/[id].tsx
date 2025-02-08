@@ -1,4 +1,4 @@
-import { fetchPlanDetailSSR, reissueSSR } from '@/api/plan';
+import { fetchPlanDetailSSR } from '@/api/plan';
 import PlanDetailMain from '@/components/planDetail/PlanDetailMain';
 import { QUERY_KEY } from '@/constants/queryKey';
 
@@ -17,17 +17,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const idNum = parseInt(id as string);
   await queryClient.prefetchQuery({
     queryKey: QUERY_KEY.planDetail(idNum),
-    queryFn: async () => {
-      try {
-        const response = await fetchPlanDetailSSR(idNum, cookie);
-        if (response === 401) throw new Error();
-        return response;
-      } catch {
-        const newCookie = await reissueSSR(cookie);
-        const response = await fetchPlanDetailSSR(idNum, newCookie);
-        return response;
-      }
-    },
+    queryFn: () => fetchPlanDetailSSR(idNum, cookie),
   });
 
   return {

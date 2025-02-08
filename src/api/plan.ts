@@ -10,6 +10,7 @@ import { showToast } from '@/utils/showToast';
 import TOAST_MESSAGE from '@/constants/toastMessage';
 import axios from 'axios';
 import { AxiosRequestConfig } from 'axios';
+import { ssrInstance } from '@/utils/axiosSsr';
 
 interface PostPlanParams {
   meetingId: number;
@@ -47,37 +48,31 @@ export const fetchPlanDetail = async (planId: number, cookie?: string) => {
   return response.data;
 };
 
-const ssrInstance = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_BASE_URL,
-  withCredentials: true,
-});
-
-export const reissueSSR = async (cookie: string) => {
-  try {
-    const response = await ssrInstance.post(
-      API_PATHS.AUTH.REFRESH_TOKEN,
-      {},
-      {
-        headers: { Cookie: cookie },
-      },
-    );
-    const newCookie = response.headers['set-cookie'];
-    if (!newCookie) return;
-    return Array.isArray(newCookie) ? newCookie.join('; ') : newCookie;
-  } catch (error) {
-    console.log('리이슈 에러', error);
-  }
-};
+// export const reissueSSR = async (cookie: string) => {
+//   const sinstance = ssrInstance(cookie)
+//   try {
+//     const response = await ssrInstance.post(
+//       API_PATHS.AUTH.REFRESH_TOKEN,
+//       {},
+//       {
+//         headers: { Cookie: cookie },
+//       },
+//     );
+//     const newCookie = response.headers['set-cookie'];
+//     if (!newCookie) return;
+//     return Array.isArray(newCookie) ? newCookie.join('; ') : newCookie;
+//   } catch (error) {
+//     console.log('리이슈 에러', error);
+//   }
+// };
 
 export const fetchPlanDetailSSR = async (planId: number, cookie?: string) => {
+  const newInstance = ssrInstance(cookie);
   if (isNaN(planId)) return;
-  const headers = cookie ? { Cookie: cookie } : {};
+
   try {
-    const response = await ssrInstance<PlanDetailResponse>(
+    const response = await newInstance<PlanDetailResponse>(
       API_PATHS.PLAN.GET_DETAIL(planId),
-      {
-        headers: headers,
-      },
     );
     return response.data;
   } catch (error: unknown) {
